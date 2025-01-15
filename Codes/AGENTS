@@ -1,0 +1,54 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+const int MAXN = 257;
+int DP[MAXN][MAXN][2];
+vector<vector<int>> CONS(MAXN);
+int main(){
+	ios_base::sync_with_stdio(0); cin.tie(0);
+	int N, M; cin >> N >> M;
+	int a1, a2; cin >> a1 >> a2;
+	while(M--){
+		int a, b; cin >> a >> b;
+		CONS[a].push_back(b);
+	}
+	for(int i = 0; i < MAXN; ++i){
+		for(int j = 0; j < MAXN; ++j){
+			DP[i][j][0] = 1000000000;
+			DP[i][j][1] = 1000000000;
+		}
+	}
+	queue<vector<int>> Q;
+	DP[a1][a2][0] = 0;
+	Q.push({a1, a2, 0});
+	while(!Q.empty()){
+		int A1 = Q.front()[0]; int A2  = Q.front()[1]; int op = Q.front()[2];
+		Q.pop();
+		if(op == 0){
+			for(int I : CONS[A1]){
+				if(DP[I][A2][1] > DP[A1][A2][0]+1){
+					DP[I][A2][1] = DP[A1][A2][0]+1;
+					Q.push({I, A2, 1});
+				}
+			}
+		}
+		else{
+			for(int I : CONS[A2]){
+                                if(DP[A1][I][0] > DP[A1][A2][1]+1){
+                                        DP[A1][I][0] = DP[A1][A2][1]+1;
+                                        Q.push({A1, I, 0});
+                                }
+                        }
+		}
+	}
+	int maxn = 1000000000;
+	for(int i = 1; i <= N; ++i){
+		maxn = min(maxn, DP[i][i][0]);
+	}
+	if(maxn == 1000000000){
+		cout << "NIE";
+	}
+	else{
+		cout << maxn/2;
+	}
+}
